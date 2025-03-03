@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Free online image compression and enhancement tool. Optimize and upscale your images easily.">
+    <meta name="keywords" content="image compressor, image enhancer, optimize images, upscale images, reduce image size">
+    <meta name="author" content="YourWebsiteName">
+    <title>Image Compressor & Enhancer</title>
+
+    <!-- Google AdSense -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+
+    <style>
+        /* Background & Typography */
+        body {
+            font-family: 'Arial', sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #1e1e2f, #4a47a3);
+            color: white;
+            overflow-x: hidden;
+        }
+
+        header {
+            padding: 20px;
+        }
+
+        h1 {
+            font-size: 28px;
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        /* Stylish Container */
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 90%;
+            max-width: 500px;
+            transition: all 0.3s ease-in-out;
+            animation: fadeInUp 1s ease-in-out;
+            margin: auto;
+        }
+
+        /* File Upload Button */
+        .file-upload {
+            background: #ff7f50;
+            padding: 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            display: inline-block;
+            transition: 0.3s;
+        }
+
+        .file-upload:hover {
+            background: #ff4500;
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        /* Buttons */
+        button {
+            background: #ff7f50;
+            color: white;
+            border: none;
+            padding: 12px;
+            width: 100%;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: 0.3s;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background: #ff4500;
+            transform: scale(1.05);
+        }
+
+        /* Preview Box */
+        .preview {
+            margin-top: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            max-width: 300px;
+            height: 300px;
+            background-color: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+        }
+
+        .preview img {
+            max-width: 100%;
+            max-height: 100%;
+            border-radius: 10px;
+        }
+
+        /* Hidden Canvas */
+        canvas {
+            display: none;
+        }
+
+        /* AdSense Ad Spaces */
+        .ad-space {
+            margin: 20px auto;
+            max-width: 728px;
+            min-height: 90px;
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Image Compressor & Enhancer</h1>
+        <p>Optimize or upscale your images with ease.</p>
+    </header>
+
+    <!-- Google AdSense Ad -->
+    <div class="ad-space">
+        <ins class="adsbygoogle"
+             style="display:block"
+             data-ad-client="ca-pub-XXXXXXXXXX"
+             data-ad-slot="XXXXXXXXXX"
+             data-ad-format="auto"></ins>
+        <script>
+            (adsbygoogle = window.adsbygoogle || []).push({});
+        </script>
+    </div>
+
+    <div class="container">
+        <label class="file-upload">
+            Select Image
+            <input type="file" id="uploadImage" accept="image/*">
+        </label>
+
+        <div class="preview" id="imagePreview">
+            <img id="previewImg" src="" alt="Selected Image">
+        </div>
+
+        <label for="compressionLevel">Compression Level: <span id="compressionValue">80%</span></label>
+        <input type="range" id="compressionLevel" min="10" max="100" value="80">
+
+        <button id="compressButton">Compress Image</button>
+        <button id="enhanceButton">Enhance Image</button>
+        <button id="downloadButton" style="display: none;">Download Processed Image</button>
+
+        <canvas id="canvas"></canvas>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const uploadImage = document.getElementById("uploadImage");
+            const compressionLevel = document.getElementById("compressionLevel");
+            const compressionValue = document.getElementById("compressionValue");
+            const compressButton = document.getElementById("compressButton");
+            const enhanceButton = document.getElementById("enhanceButton");
+            const downloadButton = document.getElementById("downloadButton");
+            const canvas = document.getElementById("canvas");
+            const ctx = canvas.getContext("2d");
+            const previewImg = document.getElementById("previewImg");
+            const imagePreview = document.getElementById("imagePreview");
+
+            let uploadedImage = null;
+
+            compressionLevel.addEventListener("input", function () {
+                compressionValue.textContent = compressionLevel.value + "%";
+            });
+
+            uploadImage.addEventListener("change", function (event) {
+                const file = event.target.files[0];
+
+                if (file) {
+                    const reader = new FileReader();
+                    reader.readAsDataURL(file);
+
+                    reader.onload = function (e) {
+                        previewImg.src = e.target.result;
+                        imagePreview.style.display = "flex";
+
+                        const img = new Image();
+                        img.src = e.target.result;
+                        img.onload = function () {
+                            uploadedImage = img;
+                        };
+                    };
+                }
+            });
+
+            function processImage(scaleFactor, quality) {
+                if (!uploadedImage) {
+                    alert("Please upload an image first.");
+                    return;
+                }
+
+                canvas.width = uploadedImage.width * scaleFactor;
+                canvas.height = uploadedImage.height * scaleFactor;
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.drawImage(uploadedImage, 0, 0, canvas.width, canvas.height);
+
+                const processedDataURL = canvas.toDataURL("image/jpeg", quality);
+                downloadButton.style.display = "inline-block";
+                downloadButton.onclick = function () {
+                    const a = document.createElement("a");
+                    a.href = processedDataURL;
+                    a.download = scaleFactor > 1 ? "enhanced-image.jpg" : "compressed-image.jpg";
+                    a.click();
+                };
+            }
+
+            compressButton.addEventListener("click", function () {
+                processImage(1, compressionLevel.value / 100);
+            });
+
+            enhanceButton.addEventListener("click", function () {
+                processImage(1.5, 1.0);
+            });
+        });
+    </script>
+
+</body>
+</html>
