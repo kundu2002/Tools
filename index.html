@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Free online image compression and enhancement tool. Optimize and upscale your images easily.">
+    <meta name="keywords" content="image compressor, image enhancer, optimize images, upscale images, reduce image size">
+    <meta name="author" content="YourWebsiteName">
+    <title>Image Compressor & Enhancer</title>
+
+    <!-- Google AdSense -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+
+    <style>
+        /* Global Styles */
+        body {
+            font-family: 'Arial', sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #1e1e2f, #4a47a3);
+            color: white;
+            overflow-x: hidden;
+        }
+
+        /* Navbar */
+        .navbar {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 15px;
+            text-align: center;
+        }
+
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            padding: 10px 15px;
+            font-size: 18px;
+        }
+
+        .navbar a:hover {
+            color: #ff7f50;
+        }
+
+        /* Header */
+        header {
+            padding: 40px 20px;
+        }
+
+        h1 {
+            font-size: 32px;
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        /* Container */
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 90%;
+            max-width: 500px;
+            margin: auto;
+            animation: fadeInUp 1s ease-in-out;
+        }
+
+        /* File Upload */
+        .file-upload {
+            background: #ff7f50;
+            padding: 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .file-upload:hover {
+            background: #ff4500;
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        /* Buttons */
+        button {
+            background: #ff7f50;
+            color: white;
+            border: none;
+            padding: 12px;
+            width: 100%;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: 0.3s;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background: #ff4500;
+            transform: scale(1.05);
+        }
+
+        /* Preview */
+        .preview {
+            margin-top: 20px;
+            width: 100%;
+            max-width: 300px;
+            height: 300px;
+            background-color: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .preview img {
+            max-width: 100%;
+            max-height: 100%;
+            border-radius: 10px;
+        }
+
+        /* How It Works */
+        .how-it-works {
+            margin: 50px auto;
+            max-width: 800px;
+            text-align: left;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+
+        .how-it-works h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        /* Footer */
+        footer {
+            margin-top: 40px;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.3);
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navbar -->
+    <div class="navbar">
+        <a href="#">Home</a>
+        <a href="#">How It Works</a>
+        <a href="#">Contact</a>
+    </div>
+
+    <header>
+        <h1>Image Compressor & Enhancer</h1>
+        <p>Optimize or upscale your images effortlessly.</p>
+    </header>
+
+----------------------------------------------------------
+
+  <div class="container">
+    <label class="file-upload">
+        Select Image
+        <input type="file" id="uploadImage" accept="image/*">
+    </label>
+
+    <div class="preview" id="imagePreview">
+        <img id="previewImg" src="" alt="Selected Image">
+    </div>
+
+    <label for="compressionLevel">Compression Level: <span id="compressionValue">80%</span></label>
+    <input type="range" id="compressionLevel" min="10" max="100" value="80">
+
+    <button id="compressButton">Compress Image</button>
+    <button id="enhanceButton">Enhance Image</button>
+
+    <!-- Hyperlinked download button -->
+    <a id="downloadLink" href="#" style="display: none;">
+        <button id="downloadButton">Download Processed Image</button>
+    </a>
+
+    <p>
+        <a href="https://example.com/tutorial" target="_blank" style="color: white; text-decoration: underline;">
+            How to Compress & Enhance Images?
+        </a>
+    </p>
+
+    <canvas id="canvas"></canvas>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const downloadButton = document.getElementById("downloadButton");
+        const downloadLink = document.getElementById("downloadLink");
+        const canvas = document.getElementById("canvas");
+        const ctx = canvas.getContext("2d");
+        let uploadedImage = null;
+
+        function processImage(scaleFactor, quality) {
+            if (!uploadedImage) {
+                alert("Please upload an image first.");
+                return;
+            }
+
+            canvas.width = uploadedImage.width * scaleFactor;
+            canvas.height = uploadedImage.height * scaleFactor;
+            ctx.drawImage(uploadedImage, 0, 0, canvas.width, canvas.height);
+
+            const processedDataURL = canvas.toDataURL("image/jpeg", quality);
+            downloadButton.style.display = "inline-block";
+            downloadLink.href = processedDataURL;
+            downloadLink.download = scaleFactor > 1 ? "enhanced-image.jpg" : "compressed-image.jpg";
+            downloadLink.style.display = "inline-block";
+        }
+
+        document.getElementById("compressButton").addEventListener("click", function () {
+            processImage(1, 0.8);
+        });
+
+        document.getElementById("enhanceButton").addEventListener("click", function () {
+            processImage(1.5, 1.0);
+        });
+    });
+</script>
+
+
+----------------------------------------------------------  
+
+    <!-- How It Works Section -->
+    <div class="how-it-works">
+        <h2>How It Works</h2>
+        <p><strong>Step 1:</strong> Upload an image.</p>
+        <p><strong>Step 2:</strong> Adjust the compression level.</p>
+        <p><strong>Step 3:</strong> Click "Compress" or "Enhance" to process.</p>
+        <p><strong>Step 4:</strong> Download your optimized image.</p>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2025 YourWebsiteName. All rights reserved.</p>
+    </footer>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const uploadImage = document.getElementById("uploadImage");
+            const compressionLevel = document.getElementById("compressionLevel");
+            const compressionValue = document.getElementById("compressionValue");
+            const compressButton = document.getElementById("compressButton");
+            const enhanceButton = document.getElementById("enhanceButton");
+            const downloadButton = document.getElementById("downloadButton");
+            const canvas = document.getElementById("canvas");
+            const ctx = canvas.getContext("2d");
+            const previewImg = document.getElementById("previewImg");
+
+            let uploadedImage = null;
+
+            compressionLevel.addEventListener("input", function () {
+                compressionValue.textContent = compressionLevel.value + "%";
+            });
+
+            uploadImage.addEventListener("change", function (event) {
+                const file = event.target.files[0];
+
+                if (file) {
+                    const reader = new FileReader();
+                    reader.readAsDataURL(file);
+
+                    reader.onload = function (e) {
+                        previewImg.src = e.target.result;
+                        uploadedImage = new Image();
+                        uploadedImage.src = e.target.result;
+                    };
+                }
+            });
+        });
+    </script>
+
+</body>
+</html>
